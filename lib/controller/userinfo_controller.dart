@@ -9,7 +9,6 @@ class UserInfoController extends GetxController {
 
   getCurrentUser() {
     final user = auth.currentUser;
-
     if(user != null) {
       loginUser = user;
     }
@@ -18,8 +17,6 @@ class UserInfoController extends GetxController {
   @override
   void onInit() {
     getCurrentUser();
-    PushNotificationService().initFirebaseCM();
-    PushNotificationService().getToken();
     super.onInit();
   }
 

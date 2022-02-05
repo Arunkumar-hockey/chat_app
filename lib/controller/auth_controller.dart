@@ -1,10 +1,15 @@
 import 'package:chat_app/all_packages.dart';
+import 'package:chat_app/constants/firestore_constants.dart';
+import 'package:chat_app/main.dart';
+import 'package:chat_app/model/user_chat.dart';
+import 'package:chat_app/view/chat_screen.dart';
 import 'package:chat_app/view/home_screen.dart';
 import 'package:chat_app/view/login_screen.dart';
 
 class AuthController extends GetxController {
 
   final auth = FirebaseAuth.instance;
+  final box = GetStorage();
 
   void createUser(String email, String password) async{
     Get.defaultDialog(
@@ -57,7 +62,7 @@ class AuthController extends GetxController {
       title: '',
     );
     try{
-      var credentials =await auth.signInWithEmailAndPassword(email: email, password: password).catchError((errMsg) {
+      var firebaseUser =await auth.signInWithEmailAndPassword(email: email, password: password).catchError((errMsg) {
         Get.back();
         Fluttertoast.showToast(
             msg: "Error:" + errMsg.toString(),
@@ -65,28 +70,35 @@ class AuthController extends GetxController {
             gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 1);
       });
-      if(credentials.user != null) {
+      if(firebaseUser.user != null) {
+        final QuerySnapshot result = await firebaseFirestore
+        .collection(FirestoreConstants.pathUserCollection)
+        .where(FirestoreConstants.id, isEqualTo: firebaseUser.user?.uid)
+        .get();
+
+        final List<DocumentSnapshot> document = result.docs;
+        if(document.length == 0) {
+          firebaseFirestore.collection(FirestoreConstants.pathUserCollection).doc(firebaseUser.user?.uid).set({
+            FirestoreConstants.id : firebaseUser.user?.uid,
+            FirestoreConstants.Email : firebaseUser.user?.email,
+            "fcmToken" : null,
+            'createdAt': DateTime.now().toString(),
+            FirestoreConstants.chattingWith : null
+          });
+
+          var currentUser = firebaseUser;
+          box.write(FirestoreConstants.id, currentUser.user?.uid);
+          box.write(FirestoreConstants.Email, currentUser.user?.email);
+        } else {
+          DocumentSnapshot documentSnapshot = document[0];
+          UserChat userChat = UserChat.fromDocument(documentSnapshot);
+
+          box.write(FirestoreConstants.id, userChat.id);
+          box.write(FirestoreConstants.Email, userChat.email);
+        }
+
         print('Login Success....');
         Get.to(HomeScreen());
-        // userRef.child(credentials.user!.uid).once().then((value) => (DataSnapshot snap) {
-        //   if(snap.value != null) {
-        //     print('snapshot......');
-        //     Get.to(MainScreen());
-        //     Fluttertoast.showToast(
-        //         msg: "You are logged-in now",
-        //         toastLength: Toast.LENGTH_SHORT,
-        //         gravity: ToastGravity.BOTTOM,
-        //         timeInSecForIosWeb: 1);
-        //   } else{
-        //     _auth.signOut();
-        //     Fluttertoast.showToast(
-        //         msg: "No records exists for this user. Please create account now",
-        //         toastLength: Toast.LENGTH_SHORT,
-        //         gravity: ToastGravity.CENTER,
-        //         timeInSecForIosWeb: 1);
-        //   }
-        // });
-
 
       } else {
         Fluttertoast.showToast(

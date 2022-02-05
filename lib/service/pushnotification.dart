@@ -1,4 +1,5 @@
 import 'package:chat_app/all_packages.dart';
+import 'package:chat_app/constants/firestore_constants.dart';
 
 import '../main.dart';
 
@@ -37,7 +38,7 @@ class PushNotificationService {
 
   void getToken() async{
     String? token = await FirebaseMessaging.instance.getToken();
-    storeMessage.collection("Messages").doc().set({
+    firebaseFirestore.collection(FirestoreConstants.pathUserCollection).doc(FirebaseAuth.instance.currentUser?.uid).update({
       "token": token
     });
     box.write('token', token);

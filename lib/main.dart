@@ -1,3 +1,4 @@
+import 'package:chat_app/view/chat_screen.dart';
 import 'package:chat_app/view/home_screen.dart';
 import 'package:chat_app/view/login_screen.dart';
 
@@ -34,12 +35,16 @@ Future <void> main() async{
   runApp( MyApp());
 }
 
-final storeMessage = FirebaseFirestore.instance;
+final firebaseFirestore = FirebaseFirestore.instance;
 
 class MyApp extends StatelessWidget {
    MyApp({Key? key}) : super(key: key);
 
-  @override
+
+   final FirebaseStorage firebaseStorage = FirebaseStorage.instance;
+
+
+   @override
   Widget build(BuildContext context) {
 
     return GetMaterialApp(

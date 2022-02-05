@@ -4,6 +4,7 @@ export 'package:get_storage/get_storage.dart';
 export 'package:firebase_auth/firebase_auth.dart';
 export 'package:firebase_core/firebase_core.dart';
 export 'package:cloud_firestore/cloud_firestore.dart';
+export 'package:firebase_storage/firebase_storage.dart';
 export 'package:responsive_framework/responsive_framework.dart' hide Condition;
 export 'package:fluttertoast/fluttertoast.dart';
 export 'package:firebase_messaging/firebase_messaging.dart';

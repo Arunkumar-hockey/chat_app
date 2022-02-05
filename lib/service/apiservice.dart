@@ -8,9 +8,8 @@ class APIService {
 
   final box = GetStorage();
 
-  sendNotification(String message) async{
+  sendNotification(String message, String token) async{
     //var destination = Provider.of<AppData>(context,listen: false).dropoffLocation;
-    String token = box.read('token');
     Map<String, String> headerMap = {
       'Content-Type' : 'application/json',
       'Authorization' : serverToken,
